@@ -1,0 +1,196 @@
+{
+  "info": {
+    "name": "0xMeta Crypto News Aggregator",
+    "description": "API collection for testing 0xMeta crypto news aggregation service",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "payment_hash",
+      "value": "0x1234567890abcdef",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health & Info",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/health",
+              "host": ["{{base_url}}"],
+              "path": ["health"]
+            },
+            "description": "Check service health and component status"
+          }
+        },
+        {
+          "name": "Root - API Info",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/",
+              "host": ["{{base_url}}"],
+              "path": [""]
+            },
+            "description": "Get API information and available endpoints"
+          }
+        },
+        {
+          "name": "Payment UI",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/payment-ui",
+              "host": ["{{base_url}}"],
+              "path": ["payment-ui"]
+            },
+            "description": "Open payment UI for wallet testing"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Markets - No Payment (402)",
+      "item": [
+        {
+          "name": "Trends (No Payment)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/markets/trends",
+              "host": ["{{base_url}}"],
+              "path": ["markets", "trends"]
+            },
+            "description": "Test payment required response (should return 402)"
+          }
+        },
+        {
+          "name": "Liquidity (No Payment)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/markets/liquidity",
+              "host": ["{{base_url}}"],
+              "path": ["markets", "liquidity"]
+            },
+            "description": "Test payment required response (should return 402)"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Markets - With Payment",
+      "item": [
+        {
+          "name": "Trends",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Payment-Hash",
+                "value": "{{payment_hash}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/markets/trends",
+              "host": ["{{base_url}}"],
+              "path": ["markets", "trends"]
+            },
+            "description": "Get trending crypto news and social updates"
+          }
+        },
+        {
+          "name": "Liquidity",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Payment-Hash",
+                "value": "{{payment_hash}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/markets/liquidity",
+              "host": ["{{base_url}}"],
+              "path": ["markets", "liquidity"]
+            },
+            "description": "Get liquidity-related news and DEX activity"
+          }
+        },
+        {
+          "name": "AI Agents",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Payment-Hash",
+                "value": "{{payment_hash}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/markets/agents",
+              "host": ["{{base_url}}"],
+              "path": ["markets", "agents"]
+            },
+            "description": "Get AI agents and automation related news"
+          }
+        },
+        {
+          "name": "Macro Events",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Payment-Hash",
+                "value": "{{payment_hash}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/markets/macro_events",
+              "host": ["{{base_url}}"],
+              "path": ["markets", "macro_events"]
+            },
+            "description": "Get macro economic events and regulatory news"
+          }
+        },
+        {
+          "name": "Proof of Work",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Payment-Hash",
+                "value": "{{payment_hash}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/markets/proof_of_work",
+              "host": ["{{base_url}}"],
+              "path": ["markets", "proof_of_work"]
+            },
+            "description": "Get mining and PoW related news"
+          }
+        }
+      ]
+    }
+  ]
+}
