@@ -125,14 +125,6 @@ gunicorn app.main:app -w 4 -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:8080
 
 ### Endpoints
 
-#### Health Check
-
-```http
-GET /health
-```
-
-Returns service status and component health.
-
 #### Root
 
 ```http
@@ -225,20 +217,14 @@ Headers:
 
 ### Using Postman
 
-1. **Health Check (No Payment Required)**
-
-   - Method: GET
-   - URL: `http://localhost:8080/health`
-   - Expected: 200 OK
-
-2. **Test Payment Required Error**
+1. **Test Payment Required Error**
 
    - Method: GET
    - URL: `http://localhost:8080/markets/trends`
    - Headers: (none)
    - Expected: 402 Payment Required
 
-3. **Test with Payment Hash**
+2. **Test with Payment Hash**
    - Method: GET
    - URL: `http://localhost:8080/markets/trends`
    - Headers:
@@ -252,7 +238,7 @@ Headers:
 1. Open browser and navigate to:
 
    ```
-   http://localhost:8080/payment-ui
+   http://localhost:8080/
    ```
 
 2. Connect your wallet (MetaMask or Phantom)
@@ -266,8 +252,6 @@ Headers:
 ### Using cURL
 
 ```bash
-# Health check
-curl http://localhost:8080/health
 
 # Test payment required
 curl http://localhost:8080/markets/trends
@@ -282,9 +266,6 @@ curl -H "X-Payment-Hash: 0xabcd1234567890..." \
 ```python
 import requests
 
-# Health check
-response = requests.get('http://localhost:8080/health')
-print(response.json())
 
 # With payment
 headers = {'X-Payment-Hash': '0xabcd1234567890...'}
@@ -307,8 +288,7 @@ print(response.json())
 │   │   ├── logging.py
 │   │   └── startup.py
 │   ├── database/          # Database setup
-│   │   ├── session.py
-│   │   └── base.py
+│   │   └── session.py
 │   ├── models/            # SQLAlchemy models
 │   │   ├── news.py
 │   │   └── payment.py
@@ -318,10 +298,12 @@ print(response.json())
 │   │   ├── cryptonews.py
 │   │   ├── game_x.py
 │   │   ├── payment.py
+│   │   ├── merger.py
 │   │   └── payment_ui.py
 │   ├── agents/            # Data processing agents
 │   │   ├── date_normalizer.py
 │   │   ├── data_merger.py
+│   │   ├── game_worker.py
 │   │   └── categorizer.py
 │   ├── queue/             # Background jobs
 │   │   └── tasks.py
@@ -329,13 +311,13 @@ print(response.json())
 │   │   └── cleanup.py
 │   ├── routes/            # API routes
 │   │   ├── markets.py
-│   │   └── health.py
 │   ├── controllers/       # Business logic
 │   │   └── markets_controller.py
 │   ├── middleware/        # Custom middleware
 │   │   └── x402.py
 │   └── main.py           # Application entry
-├── requirements.txt
+├── python-version
+├── pyproject.toml
 ├── .env
 └── README.md
 ```
@@ -502,8 +484,8 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+COPY pyproject.toml.
+RUN uv sync
 
 COPY . .
 

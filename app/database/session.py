@@ -1,41 +1,79 @@
-from sqlalchemy import create_engine, text
-from sqlalchemy.orm import sessionmaker, Session
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.ext.asyncio import (
+    AsyncSession,
+    async_sessionmaker,
+    create_async_engine,
+)
+from sqlalchemy.orm import declarative_base
+from contextlib import asynccontextmanager
+from sqlalchemy import text
 from app.core.config import settings
 from loguru import logger
 
-engine = create_engine(
-    settings.DATABASE_URL,
+
+# -------------------------------------------
+# ASYNC ENGINE
+# -------------------------------------------
+engine = create_async_engine(
+    settings.DATABASE_URL,         # Must be async driver e.g. postgres+asyncpg
     pool_pre_ping=True,
     pool_size=10,
-    max_overflow=20
+    max_overflow=20,
+    echo=False
 )
 
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+# -------------------------------------------
+# ASYNC SESSION MAKER
+# -------------------------------------------
+AsyncSessionLocal = async_sessionmaker(
+    bind=engine,
+    class_=AsyncSession,
+    autoflush=False,
+    autocommit=False,
+    expire_on_commit=False,
+)
 
+# -------------------------------------------
+# MODEL BASE
+# -------------------------------------------
 Base = declarative_base()
 
 
-def get_db() -> Session:
-    """Dependency for getting database session"""
-    db = SessionLocal()
+# -------------------------------------------
+# SESSION DEPENDENCY
+# -------------------------------------------
+@asynccontextmanager
+async def get_session() -> AsyncSession:
+    session: AsyncSession = AsyncSessionLocal()
     try:
-        yield db
+        yield session
+    except Exception:
+        await session.rollback()
+        raise
     finally:
-        db.close()
+        await session.close()
 
 
-def init_db():  # Remove 'async' here
-    """Initialize database connection"""
+# -------------------------------------------
+# INIT DB
+# -------------------------------------------
+async def init_db():
+    """
+    Run at startup: ensures DB is accessible 
+    and discards cached execution plans.
+    """
     try:
-        # Create all tables
-        Base.metadata.create_all(bind=engine)
-        
-        # Test connection
-        with engine.connect() as conn:
-            conn.execute(text("SELECT 1"))
-        logger.info("✓ Database connection established successfully")
+        async with engine.begin() as conn:
+            # Optional: run table creation (not recommended in prod)
+            # await conn.run_sync(Base.metadata.create_all)
+
+            await conn.execute(text("SELECT 1"))
+            logger.info("✓ Async database connected successfully")
+
+            # If using PostgreSQL w/ PgBouncer:
+            await conn.execute(text("DISCARD PLANS"))
+
         return True
+
     except Exception as e:
-        logger.error(f"✗ Database connection failed: {str(e)}")
+        logger.error(f"✗ Async database initialization failed: {str(e)}")
         return False

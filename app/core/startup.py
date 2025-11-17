@@ -1,11 +1,12 @@
 from loguru import logger
-from app.database.session import init_db, Base, engine
+from app.database.session import init_db
 from app.cache.redis_client import redis_client
 from app.services.cryptonews import crypto_news_service
 from app.services.game_x import game_x_service
 from app.services.payment import payment_service
 from app.workers.cleanup import cleanup_worker
 import sys
+import anyio
 
 
 async def startup_checks():
@@ -21,18 +22,11 @@ async def startup_checks():
     
     all_checks_passed = True
     
-    # 1. Database Connection
+    # # 1. Database Connection
     logger.info("\n[1/6] Checking Database Connection...")
     db_status = await init_db()
+
     if not db_status:
-        all_checks_passed = False
-    
-    # Create tables
-    try:
-        Base.metadata.create_all(bind=engine)
-        logger.info("✓ Database tables created/verified")
-    except Exception as e:
-        logger.error(f"✗ Failed to create database tables: {str(e)}")
         all_checks_passed = False
     
     # 2. Redis Connection

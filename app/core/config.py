@@ -1,7 +1,6 @@
 from pydantic_settings import BaseSettings
 from typing import List, Optional
 
-
 class Settings(BaseSettings):
     # API Configuration
     BASE_URL: str
@@ -27,7 +26,7 @@ class Settings(BaseSettings):
     # App Configuration
     APP_ENV: str = "development"
     LOG_LEVEL: str = "INFO"
-    API_PORT: int = 8080
+    API_PORT: int = 8080 
 
     # Extra APP fields in your .env
     APP_NAME: Optional[str] = None

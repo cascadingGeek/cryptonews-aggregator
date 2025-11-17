@@ -3,7 +3,7 @@ from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware
 from app.services.payment import payment_service
 from app.models.payment import PaymentTransaction
-from app.database.session import SessionLocal
+from app.database.session import AsyncSessionLocal
 from datetime import datetime
 from loguru import logger
 
@@ -61,7 +61,7 @@ class X402PaymentMiddleware(BaseHTTPMiddleware):
             )
         
         # Log payment transaction
-        db = SessionLocal()
+        db = AsyncSessionLocal()
         try:
             transaction = PaymentTransaction(
                 payment_hash=payment_hash,
@@ -92,7 +92,7 @@ class X402PaymentMiddleware(BaseHTTPMiddleware):
             
             if settlement.get("settled"):
                 # Update transaction
-                db = SessionLocal()
+                db = AsyncSessionLocal()
                 try:
                     transaction = db.query(PaymentTransaction).filter(
                         PaymentTransaction.payment_hash == payment_hash

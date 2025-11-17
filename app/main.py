@@ -5,8 +5,7 @@ from app.core.config import settings
 from app.core.logging import setup_logging
 from app.core.startup import startup_checks, shutdown_handlers
 from app.middleware.x402 import X402PaymentMiddleware
-from app.routes import markets, health
-from app.database.session import init_db
+from app.routes import markets
 import sys
 
 # Setup logging
@@ -34,25 +33,12 @@ app.add_middleware(
 app.add_middleware(X402PaymentMiddleware)
 
 # Include routers
-app.include_router(health.router)
 app.include_router(markets.router)
-
-# Serve frontend
-try:
-    app.mount("/static", StaticFiles(directory="frontend"), name="static")
-except:
-    logger.warning("Frontend directory not found, skipping static file serving")
 
 
 @app.on_event("startup")
 async def startup_event():
     """Run startup checks"""
-    # Initialize database first
-    if not init_db():
-        logger.error("Database initialization failed. Exiting...")
-        sys.exit(1)
-    
-    # Then run other startup checks
     success = await startup_checks()
     if not success:
         logger.error("Startup checks failed. Exiting...")

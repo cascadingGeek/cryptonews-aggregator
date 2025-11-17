@@ -1,8 +1,14 @@
+"""
+Cleanup Worker - Scheduled job to remove old data
+"""
+
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
-from app.database.session import SessionLocal
-from app.models.news import NewsItem, MergedData
+from app.database.session import AsyncSessionLocal
+from app.models.news import SignalItem, CategoryFeed
+from app.models.payment import PaymentTransaction
 from datetime import datetime, timedelta
 from loguru import logger
+import time
 
 
 class CleanupWorker:
@@ -35,26 +41,34 @@ class CleanupWorker:
     @staticmethod
     def cleanup_old_data():
         """Delete data older than 24 hours"""
-        db = SessionLocal()
+        db = AsyncSessionLocal()
         try:
-            cutoff_time = datetime.utcnow() - timedelta(hours=24)
+            # Calculate cutoff times
+            cutoff_datetime = datetime.utcnow() - timedelta(hours=24)
+            cutoff_timestamp = time.time() - (24 * 3600)
             
-            # Delete old news items
-            deleted_news = db.query(NewsItem).filter(
-                NewsItem.created_at < cutoff_time
+            # Delete old signal items (by timestamp)
+            deleted_signals = db.query(SignalItem).filter(
+                SignalItem.timestamp < cutoff_timestamp
             ).delete()
             
-            # Delete old merged data
-            deleted_merged = db.query(MergedData).filter(
-                MergedData.created_at < cutoff_time
+            # Delete old category feeds (by last_updated)
+            deleted_feeds = db.query(CategoryFeed).filter(
+                CategoryFeed.last_updated < cutoff_timestamp
+            ).delete()
+            
+            # Delete old payment transactions (by created_at)
+            deleted_payments = db.query(PaymentTransaction).filter(
+                PaymentTransaction.created_at < cutoff_datetime
             ).delete()
             
             db.commit()
             
-            if deleted_news > 0 or deleted_merged > 0:
+            if deleted_signals > 0 or deleted_feeds > 0 or deleted_payments > 0:
                 logger.info(
-                    f"Cleaned up {deleted_news} news items and "
-                    f"{deleted_merged} merged data records older than 24 hours"
+                    f"Cleaned up {deleted_signals} signal items, "
+                    f"{deleted_feeds} category feeds, and "
+                    f"{deleted_payments} payment records older than 24 hours"
                 )
             
         except Exception as e:
