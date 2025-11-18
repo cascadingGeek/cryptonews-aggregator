@@ -1,0 +1,110 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "0xMeta Crypto News Aggregator",
+    "description": "Real-time crypto news and social media aggregation service",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/markets/trends": {
+      "get": {
+        "tags": [
+          "markets"
+        ],
+        "summary": "Get Trends",
+        "description": "Get trending crypto news and social updates\n\nReturns:\n    Merged data from CryptoNews API and Twitter feeds for trending topics",
+        "operationId": "get_trends_markets_trends_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/markets/liquidity": {
+      "get": {
+        "tags": [
+          "markets"
+        ],
+        "summary": "Get Liquidity",
+        "description": "Get liquidity-related crypto news and updates\n\nReturns:\n    Merged data about trading volume, liquidity pools, and DEX activity",
+        "operationId": "get_liquidity_markets_liquidity_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/markets/agents": {
+      "get": {
+        "tags": [
+          "markets"
+        ],
+        "summary": "Get Agents",
+        "description": "Get AI agents and automation-related news\n\nReturns:\n    Merged data about AI agents, bots, and automation in crypto",
+        "operationId": "get_agents_markets_agents_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/markets/macro_events": {
+      "get": {
+        "tags": [
+          "markets"
+        ],
+        "summary": "Get Macro Events",
+        "description": "Get macro economic events and regulatory news\n\nReturns:\n    Merged data about regulations, institutional adoption, and macro events",
+        "operationId": "get_macro_events_markets_macro_events_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/markets/proof_of_work": {
+      "get": {
+        "tags": [
+          "markets"
+        ],
+        "summary": "Get Proof Of Work",
+        "description": "Get mining and Proof of Work related news\n\nReturns:\n    Merged data about mining, hashrate, and PoW developments",
+        "operationId": "get_proof_of_work_markets_proof_of_work_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
